@@ -1,0 +1,33 @@
+{
+  "name": "review_backend_api",
+  "version": "1.0.0",
+  "description": "This is the Backend for our Movie Rating App",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "author": "Abhishek and Mangesh",
+  "license": "ISC",
+  "dependencies": {
+    "@google/generative-ai": "^0.5.0",
+    "axios": "^1.6.7",
+    "bcrypt": "^5.1.1",
+    "cloudinary": "^2.0.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.1",
+    "express": "^4.18.2",
+    "express-async-errors": "^3.1.1",
+    "express-validator": "^7.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.0.4",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.8"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "engines":{
+    "node":"20.x",
+    "npm":"10.x"
+  }
+}
