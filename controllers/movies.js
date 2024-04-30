@@ -169,15 +169,41 @@ exports.removeMovie = async (req, res) => {
 exports.getLatestUploads = async (req, res) => {
 
 
-  const results = await Movie.find().sort('-createdAt').limit(5)
+  // const results = await Movie.find().sort('-createdAt').limit(5)
+  const results = await Movie.aggregate([
+    {
+      $lookup: {
+        from: 'reviews', // Collection name for reviews
+        localField: 'reviews',
+        foreignField: '_id',
+        as: 'reviews_data',
+      },
+    },
+    {
+      $addFields: {
+        averageRating: {
+          $avg: '$reviews_data.rating', // Calculate the average rating
+        },
+      },
+    },
+    {
+      $sort: {
+        averageRating: -1, // Sort by average rating in descending order
+      },
+    },
+    {
+      $limit: 5, // Limit the results to the top 5 movies
+    },
+  ]);
   const movies = results.map((m) => {
     return {
       id: m._id,
       title: m.title,
-      poster: m.poster?.secure_url,
+      poster: m.poster?.url,
       trailer: m.trailer?.url,
       description: m.storyline,
-      genres: m.genres
+      genres: m.genres,
+      averageRating: m.averageRating,
     }
   })
 

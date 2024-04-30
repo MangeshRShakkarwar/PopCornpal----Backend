@@ -70,7 +70,7 @@ exports.topRatedMoviesPipeline = (type) => {
         {
             $project: {
                 title: 1,
-                poster: "$poster.secure_url",
+                poster: "$poster.url",
                 reviewsCount: { $size: "$reviews" }
             }
         },
