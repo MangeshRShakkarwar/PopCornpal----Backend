@@ -21,6 +21,6 @@ router.delete('/:movieID', isAuth, isAdmin, removeMovie)
 router.get('/latest-uploads', getLatestUploads)
 router.get('/single/:movieId', getSingleMovie)
 router.get('/top-rated', getTopRatedMovies)
-
+router.get('/all-movies', getAllMovies)
 
 module.exports = router

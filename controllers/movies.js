@@ -276,3 +276,8 @@ exports.getTopRatedMovies = async (req, res) => {
 
   res.json({ movies: topRatedMovies })
 }
+
+exports.getAllMovies = async (req, res) => {
+  const movies = await Movie.find()
+  res.json({ movies })
+}
