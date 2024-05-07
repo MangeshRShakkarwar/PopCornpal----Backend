@@ -84,3 +84,27 @@ exports.topRatedMoviesPipeline = (type) => {
         }
     ]
 }
+
+exports.emailSender = async ({ userEmail, subjectText, bodyText, bodyHtml }) => {
+
+    const msg = {
+        to: userEmail,
+        from: {
+            name: 'PopcornPal',
+            email: 'abhishekchavan940@gmail.com'
+        },
+        subject: subjectText,
+        text: bodyText,
+        html: bodyHtml,
+    }
+
+    await sgMail
+        .send(msg)
+        .then((response) => {
+            console.log(response[0].statusCode)
+            console.log("Email Sent...")
+        })
+        .catch((error) => {
+            console.error(error)
+        })
+}

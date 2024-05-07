@@ -11,6 +11,7 @@ const {
     HarmCategory,
     HarmBlockThreshold,
 } = require("@google/generative-ai");
+const { emailSender } = require("../utils/helper")
 
 //using async await for saving the data to DB
 exports.create = async (req, res) => {
@@ -45,28 +46,20 @@ exports.create = async (req, res) => {
     const newEmailVerificationToken = new EmailVerificationToken({ ownerID: newUser._id, token: OTP }) //new instance of the emailVerificationToken model with the proper value
     await newEmailVerificationToken.save()
 
-    //Sending OTP to user's email
-
-    //1. Connecting with nodemailer using MailTrap
-    var transport = nodemailer.createTransport({
-        host: "sandbox.smtp.mailtrap.io",
-        port: 2525,
-        auth: {
-            user: process.env.MAIL_TRAP_USER,
-            pass: process.env.MAIL_TRAP_PASS
-        }
-    });
-    //2. Enterting the data for sending the mail
-    transport.sendMail({
-        from: 'verification@popcornpal.in',
-        to: newUser.email,
-        subject: 'Your Verification OTP',
-        html: `
-            <h4>Your verification OTP is:</h4>
+    try {
+        emailSender({
+            userEmail: newUser.email,
+            subjectText: "Verification OTP",
+            bodyText: `Your Verification OTP is: ${OTP} `,
+            bodyHtml: `<h4>Your verification OTP is:</h4>
             <h1>${OTP}</h1>
-            <h5>Happy Watching...❤️</h5>
-        `
-    })
+            <h5>Happy Watching...❤️</h5>`
+        })
+    } catch (error) {
+        console.log("Failed to send mail...")
+        console.log(error)
+        return error;
+    }
 
     // res.json({user: req.body}) --> res deals with the response, i.e. the result the backend sends to frontend
     res.status(201).json({
@@ -77,7 +70,6 @@ exports.create = async (req, res) => {
         }
     })
 }
-
 
 //Verifying the user
 exports.verifyEmail = async (req, res) => {
@@ -109,26 +101,22 @@ exports.verifyEmail = async (req, res) => {
     const jwtToken = jwt.sign({ userID: user._id }, process.env.SECRET_KEY)
     res.status(201).json({ user: { id: user._id, username: user.username, email: user.email, token: jwtToken }, message: 'Your Email has been Verified!' })
 
-
-    var transport = nodemailer.createTransport({
-        host: "sandbox.smtp.mailtrap.io",
-        port: 2525,
-        auth: {
-            user: process.env.MAIL_TRAP_USER,
-            pass: process.env.MAIL_TRAP_PASS
-        }
-    });
-
-    transport.sendMail({
-        from: 'verification@popcornpal.in',
-        to: user.email,
-        subject: 'Welcome to PopcornPal!🍿',
-        html: `
-            <h2 style="color:Purple">Lights! Camera! Popcorn!</h2>
+    try {
+        emailSender({
+            userEmail: user.email,
+            subjectText: "Welcome to PopcornPal!🍿",
+            bodyText: `Lights! Camera! Popcorn!
+            Your email has been verified!
+            Happy Watching...❤️`,
+            bodyHtml: `<h2 style="color:Purple">Lights! Camera! Popcorn!</h2>
             <h4>Your email has been verified!</h4>
-            <h5>Happy Watching...❤️</h5>
-        `
-    })
+            <h5>Happy Watching...❤️</h5>`
+        })
+    } catch (error) {
+        console.log("Failed to send mail...")
+        console.log(error)
+        return error;
+    }
 
 }
 
@@ -157,24 +145,19 @@ exports.forgetPassword = async (req, res) => {
 
     //sending a link via mail to user for reseting the password
     const resetPasswordURL = `http://localhost:3000/reset-password?token=${token}&id=${user._id}`
-    var transport = nodemailer.createTransport({
-        host: "sandbox.smtp.mailtrap.io",
-        port: 2525,
-        auth: {
-            user: process.env.MAIL_TRAP_USER,
-            pass: process.env.MAIL_TRAP_PASS
-        }
-    });
-
-    transport.sendMail({
-        from: 'security@popcornpal.in',
-        to: user.email,
-        subject: 'Your Password Reset Link',
-        html: `
-            <h4>Pal at your rescue💪⛑️</h4>
-            <a href='${resetPasswordURL}'>Click here</a><span> to reset your password.</span>
-        `
-    })
+    try {
+        emailSender({
+            userEmail: user.email,
+            subjectText: "Your Password Reset Link",
+            bodyText: ``,
+            bodyHtml: `<h4>Pal at your rescue💪⛑️</h4>
+            <a href='${resetPasswordURL}'>Click here</a><span> to reset your password.</span>`
+        })
+    } catch (error) {
+        console.log("Failed to send mail...")
+        console.log(error)
+        return error;
+    }
 
     res.status(201).json({ message: 'Link sent to your mail!' })
 }
@@ -194,24 +177,20 @@ exports.resetPassword = async (req, res) => {
     await user.save()
 
     //sending success mail to user
-    var transport = nodemailer.createTransport({
-        host: "sandbox.smtp.mailtrap.io",
-        port: 2525,
-        auth: {
-            user: process.env.MAIL_TRAP_USER,
-            pass: process.env.MAIL_TRAP_PASS
-        }
-    });
-
-    transport.sendMail({
-        from: 'security@popcornpal.in',
-        to: user.email,
-        subject: 'Password Reset Successful.',
-        html: `
-            <h4>Your password has been reset.</h4>
-            <h5>Happy Watching...❤️</h5>
-        `
-    })
+    try {
+        emailSender({
+            userEmail: user.email,
+            subjectText: "Password Reset Successful.",
+            bodyText: `Your password has been reset.
+            Happy Watching...❤️`,
+            bodyHtml: `<h4>Your password has been reset.</h4>
+            <h5>Happy Watching...❤️</h5>`
+        })
+    } catch (error) {
+        console.log("Failed to send mail...")
+        console.log(error)
+        return error;
+    }
 
     //displaying success message on frontend
     res.status(201).json({ message: 'Password reset successful!' })
@@ -236,7 +215,8 @@ exports.userSignIn = async (req, res) => {
     //if not matched
     if (!matched) { return res.status(401).json({ error: 'UhOh! Incorrect Password.' }) }
 
-    const { name, _id, role } = user;
+    const { name, _id, role, isVerified } = user;
+    if (!isVerified) { return res.status(401).json({ error: 'Please Verify your Email.' }) }
 
     //if password is correct, use JWT to 
     // const tokenName = jwt.sign(payload, secretKey, options)
