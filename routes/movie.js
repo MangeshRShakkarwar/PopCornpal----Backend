@@ -1,7 +1,7 @@
 const express = require('express')
 const { isAuth, isAdmin } = require('../middlewares/auth')
 const { uploadVideo, uploadImage } = require('../middlewares/multer')
-const { uploadTrailer, createMovie, updateMovie, removeMovie, getLatestUploads, getSingleMovie, getTopRatedMovies } = require('../controllers/movies')
+const { uploadTrailer, createMovie, updateMovie, removeMovie, getLatestUploads, getSingleMovie, getTopRatedMovies, getAllMovies } = require('../controllers/movies')
 const { parseData } = require('../utils/helper')
 const { validateMovie, validate } = require('../middlewares/validator')
 
