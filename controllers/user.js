@@ -131,7 +131,7 @@ exports.forgetPassword = async (req, res) => {
 
     //if user has already requested for password reset
     const alreadyHasToken = await PasswordResetToken.findOne({ ownerID: user._id })
-    if (alreadyHasToken) { return res.status(401).json({ error: 'Requests can be made only after a gap of 1 hour.' }) }
+    if (alreadyHasToken) { return res.status(401).json({ error: 'Reset link has already been sent to your email.' }) }
 
     //now to send a token for verifying the user to allow reset
     let token = ''
@@ -144,14 +144,15 @@ exports.forgetPassword = async (req, res) => {
     await newPasswordResetToken.save()
 
     //sending a link via mail to user for reseting the password
-    const resetPasswordURL = `http://localhost:3000/reset-password?token=${token}&id=${user._id}`
+    const resetPasswordURL = `https://popcorn-pal-front.vercel.app/auth/confirm-password?token=${token}&id=${user._id}`
     try {
         emailSender({
             userEmail: user.email,
             subjectText: "Your Password Reset Link",
-            bodyText: ``,
+            bodyText: `Password Reset LINK - ${resetPasswordURL}`,
             bodyHtml: `<h4>Pal at your rescue💪⛑️</h4>
-            <a href='${resetPasswordURL}'>Click here</a><span> to reset your password.</span>`
+            <a href=${resetPasswordURL}>Click here</a>
+            <span> to reset your password.</span>`
         })
     } catch (error) {
         console.log("Failed to send mail...")
@@ -193,7 +194,7 @@ exports.resetPassword = async (req, res) => {
     }
 
     //displaying success message on frontend
-    res.status(201).json({ message: 'Password reset successful!' })
+    res.status(201).json({ message: 'Password reset successful! Go to Login Page to continue.' })
     //after successful reset, delete the token used for verification of password reset
     await PasswordResetToken.findByIdAndDelete(req.resetToken._id)
 }
