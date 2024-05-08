@@ -117,16 +117,16 @@ exports.emailSender = async ({ userEmail, subjectText, bodyText, bodyHtml }) => 
     }
 }
 
-sgMail
-    .send(msg).
-    then((response) => {
-        console.log("response: ", response)
-        console.log("email sent")
-    })
-    .catch((error) => {
-        console.log("error: ", JSON.stringify(error))
-        console.log("email not sent")
-    })
+// sgMail
+//     .send(msg).
+//     then((response) => {
+//         console.log("response: ", response)
+//         console.log("email sent")
+//     })
+//     .catch((error) => {
+//         console.log("error: ", JSON.stringify(error))
+//         console.log("email not sent")
+//     })
 
 // try {
 //     const sended = await sgMail.send(msg)
