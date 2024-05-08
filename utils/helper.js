@@ -98,13 +98,42 @@ exports.emailSender = async ({ userEmail, subjectText, bodyText, bodyHtml }) => 
         html: bodyHtml,
     }
 
-    await sgMail
-        .send(msg)
-        .then((response) => {
-            console.log(response[0].statusCode)
-            console.log("Email Sent...")
-        })
-        .catch((error) => {
-            console.error(error)
-        })
+    // await sgMail
+    //     .send(msg)
+    //     .then((response) => {
+    //         console.log(response[0].statusCode)
+    //         console.log("Email Sent...")
+    //     })
+    //     .catch((error) => {
+    //         console.error(error)
+    //     })
+    try {
+        const sended = await sgMail.send(msg)
+        console.log("sended: ", sended)
+        return { success: true }
+    } catch (error) {
+        console.error(error)
+        return { succes: false }
+    }
 }
+
+sgMail
+    .send(msg).
+    then((response) => {
+        console.log("response: ", response)
+        console.log("email sent")
+    })
+    .catch((error) => {
+        console.log("error: ", JSON.stringify(error))
+        console.log("email not sent")
+    })
+
+// try {
+//     const sended = await sgMail.send(msg)
+//     console.log("sended: ", sended)
+//     return { success: true }
+// } catch (error) {
+//     console.error(error)
+//     return { succes: false }
+// }
+
