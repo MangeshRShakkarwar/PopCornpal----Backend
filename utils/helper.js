@@ -1,4 +1,7 @@
 const Review = require("../models/review")
+const sgMail = require('@sendgrid/mail')
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
 exports.parseData = (req, res, next) => {
     const { trailer, cast, genres, tags } = req.body
