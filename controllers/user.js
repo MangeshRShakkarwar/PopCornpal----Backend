@@ -99,7 +99,7 @@ exports.verifyEmail = async (req, res) => {
     await EmailVerificationToken.findByIdAndDelete(token._id)
 
     const jwtToken = jwt.sign({ userID: user._id }, process.env.SECRET_KEY)
-    res.status(201).json({ user: { id: user._id, username: user.username, email: user.email, token: jwtToken }, message: 'Your Email has been Verified!' })
+    res.status(201).json({ user: { id: user._id, username: user.username, email: user.email, token: jwtToken }, message: 'Email Verified! Continue to Login page...' })
 
     try {
         emailSender({
@@ -117,6 +117,55 @@ exports.verifyEmail = async (req, res) => {
         console.log(error)
         return error;
     }
+
+}
+
+exports.resendOTP = async (req, res) => {
+    const { email } = req.body;
+    const user = await User.findOne({ email })
+    const emailVerificationToken = await EmailVerificationToken.findOne({ ownerID: user._id })
+    if (!user) { return res.status(404).json({ error: 'User not found!' }) }
+
+    if (user.isVerified) {
+        return res.status(404).json({ error: 'Email already verified. Please Log In.' })
+    }
+
+    let OTP = ''
+    for (let i = 0; i < 6; i++) {
+        const randomVal = Math.round(Math.random() * 9)
+        OTP += randomVal
+    }
+    if (emailVerificationToken) {
+        emailVerificationToken.token = OTP;
+        await emailVerificationToken.save()
+    }
+    else {
+        const newEmailVerificationToken = new EmailVerificationToken({ ownerID: user._id, token: OTP }) //new instance of the emailVerificationToken model with the proper value
+        await newEmailVerificationToken.save()
+    }
+
+    try {
+        emailSender({
+            userEmail: user.email,
+            subjectText: "Your Resend OTP Request",
+            bodyText: `Your New Verification OTP - ${OTP}`,
+            bodyHtml: `<h4>Your New verification OTP is:</h4>
+            <h1>${OTP}</h1>
+            <h5>Happy Watching...❤️</h5>`
+        })
+    } catch (error) {
+        console.log("Failed to send mail...")
+        console.log(error)
+        return error;
+    }
+
+    res.status(201).json({
+        user: {
+            id: user._id,
+            username: user.username,
+            email: user.email
+        }
+    })
 
 }
 

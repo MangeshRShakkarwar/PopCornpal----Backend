@@ -3,7 +3,7 @@ const express = require('express')
 const { validate, userValidator, passwordValidator, signInValidator } = require("../middlewares/validator")
 const { } = require("../middlewares/validator")
 
-const { create, verifyEmail, forgetPassword, resetPassword, userSignIn, chat } = require("../controllers/user")
+const { create, verifyEmail, forgetPassword, resetPassword, userSignIn, chat, resendOTP } = require("../controllers/user")
 
 const { isValidPassResetToken } = require("../middlewares/verifyPasswordResetToken")
 const { isAuth } = require('../middlewares/auth')
@@ -13,6 +13,8 @@ const router = express.Router()
 router.post('/chat', chat)
 
 router.post('/verify-email', verifyEmail) //route to email verification (token comparison actually)
+
+router.post('/resend-otp', resendOTP)
 
 router.post('/create', userValidator, validate, create) //create is the actual route handler/controller that will be executed if the request passes through the previous middlewares without errors.
 
