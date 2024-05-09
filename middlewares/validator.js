@@ -7,7 +7,7 @@ const { isValidObjectId } = require('mongoose')
 //defining the checks to be done
 exports.userValidator = [
     check("username").trim().not().isEmpty().withMessage("Username cannot be empty"),
-    check("email").normalizeEmail().isEmail().withMessage("Invalid Email"),
+    check("email").trim().normalizeEmail().isEmail().withMessage("Invalid Email"),
     check("password").trim().not().isEmpty().withMessage("Password cannot be empty").isLength({ min: 8, max: 20 }).withMessage("Password must be 8 to 20 characters long")
 ]
 
@@ -100,6 +100,6 @@ exports.passwordValidator = [
 ]
 
 exports.signInValidator = [
-    check("email").normalizeEmail().isEmail().withMessage("Invalid Email"),
+    check("email").trim().normalizeEmail().isEmail().withMessage("Invalid Email"),
     check("password").trim().not().isEmpty().withMessage("Password cannot be empty")
 ]
