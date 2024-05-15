@@ -250,7 +250,7 @@ exports.getSingleMovie = async (req, res) => {
         roleAs: c.roleAs,
         leadActor: c.leadActor,
       })),
-      poster: poster?.secure_url,
+      poster: poster?.url,
       trailer: trailer?.url,
       reviews: { ...reviews }
     },
