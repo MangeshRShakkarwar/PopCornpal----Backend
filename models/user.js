@@ -27,7 +27,8 @@ const userSchema = mongoose.Schema({
         required:true,
         default:"user",
         enum:["admin", "user"]
-    }
+    },
+    liked: [{ type: mongoose.Schema.Types.ObjectId, ref: "Movie"}]
 })
 
 //to hash the password

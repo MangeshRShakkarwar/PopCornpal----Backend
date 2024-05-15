@@ -1,6 +1,7 @@
 const { isValidObjectId } = require("mongoose")
 const Movie = require("../models/movie")
 const Review = require("../models/review")
+const User = require("../models/user");
 const AlreadyVoted = require("../models/alreadyVoted")
 
 const {
@@ -175,6 +176,37 @@ exports.getReviewsByMovie = async (req, res) => {
 
 
   res.json({ reviews })
+}
+exports.getReviewsByOwner = async (req, res) => {
+
+  const { userId } = req.params
+  if (!isValidObjectId(userId)) return res.json({ error: "Invalid User ID" })
+
+  const user = await User.findById(userId).populate({
+    path: "reviews",
+  }).select('reviews')
+  console.log(user)
+
+  // console.log("Reviews here"+reviews)
+  // const reviews = movie.reviews.map((r) => {
+  //   const { owner, content, rating, _id: reviewId, upvotes, downvotes, reviewTag } = r
+  //   const { username, _id: ownerId } = owner
+  //   return {
+  //     id: reviewId,
+  //     owner: {
+  //       id: ownerId,
+  //       username,
+  //     },
+  //     content,
+  //     rating,
+  //     upvotes,
+  //     downvotes,
+  //     reviewTag,
+  //   }
+  // })
+
+
+  // res.json({ reviews })
 }
 
 exports.addUpvote = async (req, res) => {
