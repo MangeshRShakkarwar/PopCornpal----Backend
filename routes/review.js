@@ -6,8 +6,8 @@ const router = require('express').Router()
 
 
 router.post('/add/:movieId', isAuth, validateRatings, validate, addReview)
-router.patch('/:reviewId', isAuth, validateRatings, validate, updateReview)
-router.delete('/:reviewId', isAuth, removeReview)
+router.patch('/update/:reviewID', updateReview)
+router.delete('/delete/:reviewID', isAuth, removeReview)
 router.get('/get-reviews-by-movie/:movieId', getReviewsByMovie)
 router.post('/add-upvote/:movieId/:reviewID', isAuth, addUpvote)
 router.post('/add-downvote/:movieId/:reviewID', isAuth, addDownvote)

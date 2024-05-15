@@ -62,7 +62,6 @@ async function sentimentAnalysis(content) {
 
 
 exports.addReview = async (req, res) => {
-  console.log("Backend...", req.body)
   const { movieId } = req.params
   const { content, rating } = req.body
   const userId = req.user._id
@@ -101,49 +100,45 @@ exports.addReview = async (req, res) => {
 
 
 exports.updateReview = async (req, res) => {
-  const { reviewId } = req.params
-  const { content, rating, upvotes, downvotes } = req.body
-  const userId = req.user._id
 
-  //checking is movie id is valid
-  if (!isValidObjectId(reviewId)) return res.json({ error: "Invalid Review ID!" })
+  const { reviewID } = req.params
+  const { text } = req.body
+  console.log("Backend...", reviewID, text)
+  // checking is movie id is valid
+  if (!isValidObjectId(reviewID)) return res.json({ error: "Invalid Review ID!" })
 
-  //checking if the review is of that owner only, if it is then only let him update it
-  const review = await Review.findOne({ owner: userId, _id: reviewId })
+  const review = await Review.findById(reviewID)
 
   if (!review) return res.status(404).json({ error: "Review not found!" })
-
-  review.content = content
-  review.rating = rating
-  review.upvotes = upvotes
-  review.downvotes = downvotes
-
-  await review.save()
-
-  res.json({ message: "Review has been updated!" })
+  try {
+    review.content = text
+    await review.save()
+    res.json({ message: "Review has been updated!" })
+  } catch (error) {
+    res.status(500).json({ error: "Error Updating the review" })
+  }
 }
 
 exports.removeReview = async (req, res) => {
+  const { reviewID } = req.params
 
-  const { reviewId } = req.params
-  const userId = req.user._id
+  if (!isValidObjectId(reviewID)) return res.json({ error: "Invalid Review ID" })
+  try {
+    const movie = await Movie.findOne({ reviews: reviewID });
 
-  if (!isValidObjectId(reviewId)) return res.json({ error: "Invalid Review ID" })
+    if (!movie) {
+      return res.status(404).json({ error: "Movie not found or you don't have permission to delete the review" });
+    }
+    // Remove the review from the movie's reviews array
+    movie.reviews.pull(reviewID);
+    await movie.save();
 
-  const review = await Review.findOne({ owner: userId, _id: reviewId })
-  if (!review) return res.status(404).json({ error: "Invalid request, Review not found!" })
-
-  //delete the review and update the movie db
-  const movie = await Movie.findById(review.parentMovie).select('reviews')
-  movie.reviews = movie.reviews.filter(rId => rId.toString() !== reviewId) //when we want to compare two object IDs we need to make both of them in string
-
-  await Review.findByIdAndDelete(reviewId)
-  await movie.save()
-
-
-  res.json({ message: "Review has been removed!" })
+    const review = await Review.findByIdAndDelete(reviewID)
+    res.json({ message: "Review has been removed!" })
+  } catch (error) {
+    res.status(500).json({ error: "Error deleting the review" })
+  }
 }
-
 
 exports.getReviewsByMovie = async (req, res) => {
 
