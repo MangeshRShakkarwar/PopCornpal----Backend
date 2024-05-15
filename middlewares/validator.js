@@ -62,6 +62,7 @@ exports.validateRatings = check('rating', "Rating must be a number between 1 and
 exports.validate = (req, res, next) => {
     const error = validationResult(req).array() //.array() to get the list of errors
     if (error.length) {
+        console.log("Error in Validation...")
         return res.json({ error: error[0].msg })
     }
 
