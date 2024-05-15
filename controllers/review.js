@@ -102,8 +102,8 @@ exports.addReview = async (req, res) => {
 exports.updateReview = async (req, res) => {
 
   const { reviewID } = req.params
-  const { text } = req.body
-  console.log("Backend...", reviewID, text)
+  const { content } = req.body
+  console.log("Backend...", reviewID, content)
   // checking is movie id is valid
   if (!isValidObjectId(reviewID)) return res.json({ error: "Invalid Review ID!" })
 
@@ -111,7 +111,7 @@ exports.updateReview = async (req, res) => {
 
   if (!review) return res.status(404).json({ error: "Review not found!" })
   try {
-    review.content = text
+    review.content = content
     await review.save()
     res.json({ message: "Review has been updated!" })
   } catch (error) {
