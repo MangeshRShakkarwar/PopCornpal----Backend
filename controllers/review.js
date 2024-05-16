@@ -177,36 +177,16 @@ exports.getReviewsByMovie = async (req, res) => {
 
   res.json({ reviews })
 }
-// exports.getReviewsByOwner = async (req, res) => {
-//   const { userId } = req.params
-//   if (!isValidObjectId(userId)) return res.json({ error: "Invalid User ID" })
+exports.getReviewsByOwner = async (req, res) => {
+  const { userId } = req.params
+  if (!isValidObjectId(userId)) return res.json({ error: "Invalid User ID" })
+  const user = await User.findById(userId)
+  if (!user) return res.json({ error: "User not found" })
+  const reviews = await Review.find({ owner: userId }) //array of objects
 
-//   const user = await User.findById(userId).populate({
-//     path: "reviews",
-//   }).select('reviews')
-//   console.log(user)
+  res.json({ reviews })
+}
 
-//   // console.log("Reviews here"+reviews)
-//   // const reviews = movie.reviews.map((r) => {
-//   //   const { owner, content, rating, _id: reviewId, upvotes, downvotes, reviewTag } = r
-//   //   const { username, _id: ownerId } = owner
-//   //   return {
-//   //     id: reviewId,
-//   //     owner: {
-//   //       id: ownerId,
-//   //       username,
-//   //     },
-//   //     content,
-//   //     rating,
-//   //     upvotes,
-//   //     downvotes,
-//   //     reviewTag,
-//   //   }
-//   // })
-
-
-//   // res.json({ reviews })
-// }
 
 exports.addUpvote = async (req, res) => {
   const { movieId, reviewID } = req.params
