@@ -1,8 +1,8 @@
 const { isValidObjectId } = require("mongoose")
 const cloudinary = require("../cloud/index")
 const Movie = require("../models/movie")
-const Review = require("../models/review")
-const { averageRatingPipeline, topRatedMoviesPipeline, getAverageRatings } = require("../utils/helper")
+const User = require("../models/user")
+const { topRatedMoviesPipeline, getAverageRatings } = require("../utils/helper")
 
 exports.uploadTrailer = async (req, res) => {
   const { file } = req
@@ -280,4 +280,41 @@ exports.getTopRatedMovies = async (req, res) => {
 exports.getAllMovies = async (req, res) => {
   const movies = await Movie.find()
   res.json({ movies })
+}
+
+exports.updateMovieLike = async (req, res) => {
+  const { movieId, userId } = req.body;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const alreadyLiked = user.likedMovies.includes(movieId);
+    if (alreadyLiked) {
+      return res.status(401).json({ error: "Already Liked!" });
+    }
+    user.likedMovies.push(movieId);
+    await user.save();
+
+    res.status(201).json({ message: `Added to "Liked by you"` });
+  } catch (error) {
+    res.status(500).json({ error: "Couldn't like the movie" });
+  }
+};
+exports.getMovieNamesFromIds = async (req, res) => {
+  const { movieIdArray } = req.body
+  const movieNameArray = []
+  try {
+    const promises = movieIdArray.map(async (m) => {
+      const movie = await Movie.findById(m);
+      if (!movie) return res.status(404).json({ error: "Movie not found among the List" })
+      movieNameArray.push({ title: movie.title, id: movie._id })
+    })
+    await Promise.all(promises)
+    res.status(201).json({ movieNameArray })
+  } catch (error) {
+    res.status(500).json({ error })
+  }
 }

@@ -28,7 +28,6 @@ const userSchema = mongoose.Schema({
         default: "user",
         enum: ["admin", "user"]
     },
-    reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "Review" }], ////Maybe removed later
     likedMovies: [{ type: mongoose.Schema.Types.ObjectId, ref: "Movie" }],
 })
 
