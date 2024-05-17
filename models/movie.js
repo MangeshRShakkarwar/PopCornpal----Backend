@@ -15,7 +15,7 @@ const movieSchema = mongoose.Schema(
     },
     director: {
       type: String,
-      required: true,
+      required: false,
     },
     releaseDate: {
       type: Date,
