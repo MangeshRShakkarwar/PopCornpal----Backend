@@ -11,7 +11,6 @@ const movieSchema = mongoose.Schema(
     storyline: {
       type: String,
       trim: true,
-      required: true,
     },
     director: {
       type: String,
@@ -19,19 +18,15 @@ const movieSchema = mongoose.Schema(
     },
     releaseDate: {
       type: Date,
-      required: true,
     },
     type: {
       type: String,
-      required: true,
     },
     genres: {
       type: [String],
-      required: true,
     },
     tags: {
       type: [String],
-      required: true,
     },
     cast: [
       {
