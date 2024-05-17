@@ -28,7 +28,6 @@ const movieSchema = mongoose.Schema(
     genres: {
       type: [String],
       required: true,
-      enum: genres,
     },
     tags: {
       type: [String],
