@@ -2,7 +2,7 @@ const Review = require("../models/review")
 const sgMail = require('@sendgrid/mail')
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY)
-
+//used to convert json object to arrays in the db
 exports.parseData = (req, res, next) => {
     const { trailer, cast, genres, tags } = req.body
 
@@ -13,7 +13,7 @@ exports.parseData = (req, res, next) => {
 
     next()
 }
-
+//aggregation for calculating average rating
 exports.averageRatingPipeline = (movieId) => {
     return [
         {
@@ -53,7 +53,7 @@ exports.getAverageRatings = async (movieId) => {
     return reviews
 }
 
-
+//to fetch top rated movies 
 exports.topRatedMoviesPipeline = (type) => {
     return [
         {
@@ -87,7 +87,7 @@ exports.topRatedMoviesPipeline = (type) => {
         }
     ]
 }
-
+//helper to send an email to user
 exports.emailSender = async ({ userEmail, subjectText, bodyText, bodyHtml }) => {
 
     const msg = {

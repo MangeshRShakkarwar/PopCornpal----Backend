@@ -61,7 +61,7 @@ async function sentimentAnalysis(content) {
   return response.text()
 }
 
-
+// add new review
 exports.addReview = async (req, res) => {
   const { movieId } = req.params
   const { content, rating } = req.body
@@ -133,7 +133,7 @@ exports.removeReview = async (req, res) => {
     // Remove the review from the movie's reviews array
     movie.reviews.pull(reviewID);
     await movie.save();
-
+//delete from review schema
     const review = await Review.findByIdAndDelete(reviewID)
     res.json({ message: "Review has been removed!" })
   } catch (error) {

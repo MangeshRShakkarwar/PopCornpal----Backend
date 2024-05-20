@@ -165,7 +165,7 @@ exports.removeMovie = async (req, res) => {
 }
 
 //Search Movie
-
+//most reviews sorted on slideshow like most trending on site
 exports.getLatestUploads = async (req, res) => {
 
 
@@ -195,6 +195,7 @@ exports.getLatestUploads = async (req, res) => {
       $limit: 5, // Limit the results to the top 5 movies
     },
   ]);
+  //for storing movie details at slideshow basically traversing
   const movies = results.map((m) => {
     return {
       id: m._id,
@@ -209,15 +210,15 @@ exports.getLatestUploads = async (req, res) => {
 
   res.json({ movies })
 }
-
+//single movie pages
 exports.getSingleMovie = async (req, res) => {
   const { movieId } = req.params
   if (!isValidObjectId(movieId)) return res.json({ error: "Invalid Movie ID" })
 
-  const movie = await Movie.findById(movieId)
+  const movie = await Movie.findById(movieId)//find in db
 
-  const reviews = await getAverageRatings(movie._id)
-
+  const reviews = await getAverageRatings(movie._id)//avg . rating 
+//fetched movie and destructured it
   const {
     _id: id,
     title,
@@ -231,7 +232,7 @@ exports.getSingleMovie = async (req, res) => {
     cast,
     trailer,
     language
-  } = movie
+  } = movie//destructure
 
 
   res.json({
@@ -257,7 +258,7 @@ exports.getSingleMovie = async (req, res) => {
   })
 
 }
-
+//top rated movie component
 exports.getTopRatedMovies = async (req, res) => {
   const { type = "Movie" } = req.query
 
@@ -276,7 +277,7 @@ exports.getTopRatedMovies = async (req, res) => {
 
   res.json({ movies: topRatedMovies })
 }
-
+//for search bar to fetch
 exports.getAllMovies = async (req, res) => {
   const movies = await Movie.find()
   res.json({ movies })
@@ -303,6 +304,7 @@ exports.updateMovieLike = async (req, res) => {
     res.status(500).json({ error: "Couldn't like the movie" });
   }
 };
+//profile having movie names with reviews posted
 exports.getMovieNamesFromIds = async (req, res) => {
   const { movieIdArray } = req.body
   const movieNameArray = []
